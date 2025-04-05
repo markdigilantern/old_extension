@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "LinkedIn Sales Navigator Pro",
+  "version": "1.0",
+  "description": "Professional data extraction tool for LinkedIn Sales Navigator with native side panel",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "webRequest",
+    "storage",
+    "downloads",
+    "tabs",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "https://www.linkedin.com/*",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://www.linkedin.com/sales/*"],
+      "js": ["content-script.js"],
+      "css": ["unified-styles.css", "all.min.css"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "LinkedIn Sales Navigator Pro",
+    "default_icon": {
+      "16": "icon.png",
+      "32": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "sidePanel.html"
+  },
+  "icons": {
+    "16": "icon.png",
+    "32": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icon.png", "all.min.css", "crm-integration.js"],
+      "matches": ["https://www.linkedin.com/*"]
+    }
+  ]
+}

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LinkedIn Sales Navigator Pro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="sidePanel.css">
+</head>
+<body>
+  <!-- Side Panel -->
+  <div id="ln-side-panel" class="ln-side-panel">
+    <!-- Header area -->
+    <div class="sidebar-header">
+      <div class="sidebar-title">
+        <i class="fas fa-database"></i>
+        <span>LinkedIn Data Extractor</span>
+      </div>
+      <div class="sidebar-controls">
+        <button class="sidebar-control-btn" id="pin-btn" title="Pin panel">
+          <i class="fas fa-thumbtack"></i>
+        </button>
+        <button class="sidebar-control-btn" id="close-btn" title="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Navigation tabs -->
+    <div class="sidebar-tabs">
+      <div class="sidebar-tab active" data-tab="data">
+        <i class="fas fa-table"></i> <span>Data</span>
+      </div>
+      <div class="sidebar-tab" data-tab="extract">
+        <i class="fas fa-download"></i> <span>Extract</span>
+      </div>
+      <div class="sidebar-tab" data-tab="settings">
+        <i class="fas fa-cog"></i> <span>Settings</span>
+      </div>
+      <div class="sidebar-tab" data-tab="help">
+        <i class="fas fa-question-circle"></i> <span>Help</span>
+      </div>
+    </div>
+    
+    <!-- Tab content container -->
+    <div class="tab-container">
+      <!-- Data Tab Content -->
+      <div class="tab-content active" id="data-tab">
+        <div class="search-filter-bar">
+          <div class="search-box">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" id="search-input" placeholder="Search profiles...">
+          </div>
+          
+          <div class="filter-controls">
+            <div class="filter-dropdown">
+              <select id="filter-select">
+                <option value="all">All Types</option>
+                <option value="leads">Leads Only</option>
+                <option value="accounts">Accounts Only</option>
+              </select>
+            </div>
+            
+            <div class="filter-dropdown">
+              <select id="sort-select">
+                <option value="name-asc">Name (A-Z)</option>
+                <option value="name-desc">Name (Z-A)</option>
+                <option value="date-desc">Newest First</option>
+                <option value="date-asc">Oldest First</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="data-counts">
+          <div class="data-count">
+            <i class="fas fa-user"></i>
+            <span id="lead-count">0 Leads</span>
+          </div>
+          <div class="data-count">
+            <i class="fas fa-building"></i>
+            <span id="account-count">0 Accounts</span>
+          </div>
+          <div class="data-count">
+            <i class="fas fa-check-circle"></i>
+            <span id="selected-count">0 Selected</span>
+          </div>
+        </div>
+        
+        <div class="data-content" id="data-content">
+          <div class="empty-state" id="empty-state">
+            <i class="fas fa-database"></i>
+            <p>No profiles have been scraped yet. Go to the Extract tab to begin.</p>
+          </div>
+          
+          <!-- Data items will be added here dynamically -->
+        </div>
+        
+        <div class="extractor-controls">
+          <div class="control-buttons">
+            <button class="control-btn secondary" id="select-all-btn">
+              <i class="fas fa-check-square"></i> Select All
+            </button>
+            <button class="control-btn secondary" id="deselect-all-btn">
+              <i class="fas fa-square"></i> Deselect
+            </button>
+            <button class="control-btn secondary" id="export-csv-btn" disabled>
+              <i class="fas fa-file-export"></i> Export CSV
+            </button>
+            <button class="control-btn primary full-width" id="sync-crm-btn" disabled>
+              <i class="fas fa-sync"></i> Sync to CRM (0)
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Extract Tab Content -->
+      <div class="tab-content" id="extract-tab">
+        <div class="extractor-stats">
+          <div class="stat-item">
+            <div class="stat-value" id="total-scraped">0</div>
+            <div class="stat-label">Profiles Scraped</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="current-page">1</div>
+            <div class="stat-label">Current Page</div>
+          </div>
+        </div>
+        
+        <div class="progress-container">
+          <div class="progress-label">
+            <span>Extraction Progress</span>
+            <span id="progress-text">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-bar" style="width: 0%"></div>
+          </div>
+        </div>
+        
+        <div class="control-buttons">
+          <button class="control-btn primary" id="extract-btn">
+            <i class="fas fa-download"></i> Extract Data
+          </button>
+          <button class="control-btn secondary" id="pause-btn" disabled>
+            <i class="fas fa-pause"></i> Pause
+          </button>
+          <button class="control-btn secondary" id="stop-btn" disabled>
+            <i class="fas fa-stop"></i> Stop
+          </button>
+          <button class="control-btn secondary" id="clear-btn">
+            <i class="fas fa-trash"></i> Clear Data
+          </button>
+        </div>
+        
+        <div class="status-message" id="status-message">
+          Ready to extract data
+        </div>
+        
+        <div class="extraction-settings">
+          <div class="settings-section">
+            <div class="settings-title">Extraction Settings</div>
+            
+            <div class="settings-row">
+              <label class="settings-label">Max Profiles to Extract</label>
+              <input type="number" id="max-profiles" class="settings-input" value="100">
+            </div>
+            
+            <div class="settings-row">
+              <div class="setting-with-toggle">
+                <span class="setting-toggle-label">Auto-scroll pages</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="auto-scroll" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="setting-with-toggle">
+                <span class="setting-toggle-label">Extract accounts</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="extract-accounts" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="setting-with-toggle">
+                <span class="setting-toggle-label">Extract leads</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="extract-leads" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Settings Tab Content -->
+      <div class="tab-content" id="settings-tab">
+        <div class="settings-section">
+          <div class="settings-title">Side Panel Options</div>
+          
+          <div class="settings-note alert-box">
+            <i class="fas fa-info-circle"></i>
+            <span>The Side Panel must be opened manually by clicking the extension icon in your browser toolbar. This is a Chrome limitation for security reasons.</span>
+          </div>
+          
+          <div class="setting-with-toggle">
+            <span class="setting-toggle-label">Show badge when on LinkedIn Sales Navigator</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="auto-open" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="settings-section">
+          <div class="settings-title">CRM Integration</div>
+          
+          <div class="settings-row">
+            <label class="settings-label">API Endpoint</label>
+            <input type="text" id="crm-endpoint" class="settings-input" placeholder="https://your-crm-api.com/endpoint">
+          </div>
+          
+          <div class="settings-row">
+            <label class="settings-label">API Key</label>
+            <input type="password" id="crm-api-key" class="settings-input" value="">
+          </div>
+          
+          <div class="control-buttons">
+            <button class="control-btn primary full-width" id="save-settings-btn">
+              <i class="fas fa-save"></i> Save Settings
+            </button>
+          </div>
+        </div>
+        
+        <div class="settings-section">
+          <div class="settings-title">Data Storage</div>
+          
+          <div class="settings-row">
+            <div class="setting-with-toggle">
+              <span class="setting-toggle-label">Save data between sessions</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="save-data" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="control-buttons">
+            <button class="control-btn secondary" id="export-all-btn">
+              <i class="fas fa-download"></i> Export All
+            </button>
+            <button class="control-btn secondary" id="import-data-btn">
+              <i class="fas fa-upload"></i> Import
+            </button>
+          </div>
+        </div>
+        
+        <div class="settings-section">
+          <div class="settings-title">Panel State</div>
+          
+          <div class="settings-row">
+            <div class="setting-with-toggle">
+              <span class="setting-toggle-label">Remember panel state</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="remember-state" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Help Tab Content -->
+      <div class="tab-content" id="help-tab">
+        <div class="help-content">
+          <div class="help-section">
+            <div class="help-title">How to Use</div>
+            <div class="help-desc">
+              This extension helps you extract profile data from LinkedIn Sales Navigator. Follow these steps:
+            </div>
+            <ul class="help-list">
+              <li class="help-list-item">
+                <i class="fas fa-search"></i>
+                <span>First, search for leads or accounts in LinkedIn Sales Navigator</span>
+              </li>
+              <li class="help-list-item">
+                <i class="fas fa-grip-lines-vertical"></i>
+                <span>Click the extension icon in your browser toolbar to open the side panel</span>
+              </li>
+              <li class="help-list-item">
+                <i class="fas fa-download"></i>
+                <span>Go to the Extract tab and click "Extract Data"</span>
+              </li>
+              <li class="help-list-item">
+                <i class="fas fa-filter"></i>
+                <span>Use the Data tab to search, filter, and select profiles</span>
+              </li>
+              <li class="help-list-item">
+                <i class="fas fa-file-export"></i>
+                <span>Export selected profiles to CSV or sync to your CRM</span>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="help-section">
+            <div class="help-title">Troubleshooting</div>
+            <div class="help-desc">
+              Having issues? Try these solutions:
+            </div>
+            <ul class="help-list">
+              <li class="help-list-item">
+                <i class="fas fa-sync"></i>
+                <span>Refresh the page and try again</span>
+              </li>
+              <li class="help-list-item">
+                <i class="fas fa-trash"></i>
+                <span>Clear your data and start fresh</span>
+              </li>
+              <li class="help-list-item">
+                <i class="fas fa-cog"></i>
+                <span>Check your settings for proper configuration</span>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="help-section">
+            <div class="help-title">Side Panel Notes</div>
+            <div class="help-desc">
+              Important information about using the Chrome side panel:
+            </div>
+            <ul class="help-list">
+              <li class="help-list-item">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>The side panel must be opened manually by clicking the extension icon in your browser toolbar</span>
+              </li>
+              <li class="help-list-item">
+                <i class="fas fa-info-circle"></i>
+                <span>This is a Chrome security requirement and cannot be bypassed</span>
+              </li>
+              <li class="help-list-item">
+                <i class="fas fa-lightbulb"></i>
+                <span>The side panel will stay open as you navigate between LinkedIn pages</span>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="help-section">
+            <div class="help-title">About Chrome Side Panel</div>
+            <div class="help-desc">
+              Chrome's native side panel offers these benefits:
+            </div>
+            <ul class="help-list">
+              <li class="help-list-item">
+                <i class="fas fa-check"></i>
+                <span>Stays open while you navigate between different LinkedIn pages</span>
+              </li>
+              <li class="help-list-item">
+                <i class="fas fa-check"></i>
+                <span>Doesn't interfere with LinkedIn's page layout</span>
+              </li>
+              <li class="help-list-item">
+                <i class="fas fa-check"></i>
+                <span>Can be pinned open or easily resized</span>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="help-section">
+            <div class="help-title">About</div>
+            <div class="help-desc">
+              LinkedIn Data Extractor v1.0<br>
+              For Chrome Side Panel<br>
+              For support: support@example.com
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="utils.js"></script>
+  <script src="crm-integration.js"></script>
+  <script src="sidePanel.js"></script>
+</body>
+</html>
